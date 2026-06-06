@@ -61,17 +61,22 @@ export const useInterview = () => {
 
     const getResumePdf = async (interviewReportId) => {
         setLoading(true)
-        let response = null
         try {
-            response = await generateResumePdf({ interviewReportId })
-            const url = window.URL.createObjectURL(new Blob([ response ], { type: "application/pdf" }))
+            // response is already a Blob because axios responseType: "blob" is set in interview.api.js
+            // DO NOT wrap it again in new Blob([response]) — that double-wraps and corrupts the PDF
+            const blob = await generateResumePdf({ interviewReportId })
+
+            const url = window.URL.createObjectURL(blob)
             const link = document.createElement("a")
             link.href = url
             link.setAttribute("download", `resume_${interviewReportId}.pdf`)
             document.body.appendChild(link)
             link.click()
-        }
-        catch (error) {
+
+            // cleanup
+            link.remove()
+            window.URL.revokeObjectURL(url)
+        } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
@@ -84,8 +89,7 @@ export const useInterview = () => {
         } else {
             getReports()
         }
-    }, [ interviewId ])
+    }, [interviewId])
 
     return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf }
-
 }
