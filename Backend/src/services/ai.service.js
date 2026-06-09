@@ -58,16 +58,15 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
 }
 
 async function generatePdfFromHtml(htmlContent) {
-    console.log("🟡 Launching browser...")  // ADD
-    const executablePath = await chromium.executablePath
-    console.log("🟡 Chromium path:", executablePath)  // ADD
+    console.log("🟡 Launching browser...")
+    const executablePath = await chromium.executablePath()
+    console.log("🟡 Chromium path:", executablePath)
 
     const browser = await puppeteer.launch({
         args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
         executablePath,
-        headless: chromium.headless,
-        // Required for Render's read-only filesystem
-        ignoreDefaultArgs: ["--disable-extensions"],
+        headless: true,
     })
 
     const page = await browser.newPage()
@@ -80,8 +79,6 @@ async function generatePdfFromHtml(htmlContent) {
     })
 
     await browser.close()
-
-    // puppeteer-core returns a Uint8Array — convert to Buffer so res.send() works correctly
     return Buffer.from(pdfBuffer)
 }
 
@@ -304,7 +301,7 @@ Resume must fill the entire page — no empty white space at bottom.
 Tailor existing content wording to match job description keywords.`
 
     const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite",
+        model: "gemini-2.5-flash",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
