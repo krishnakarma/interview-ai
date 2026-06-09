@@ -46,7 +46,7 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
 `
 
     const response = await ai.models.generateContent({
-       model: "gemini-2.0-flash",
+       model: "gemini-3.1-flash-lite",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
@@ -304,7 +304,7 @@ Resume must fill the entire page — no empty white space at bottom.
 Tailor existing content wording to match job description keywords.`
 
     const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
+        model: "gemini-3.1-flash-lite",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
@@ -318,3 +318,4 @@ Tailor existing content wording to match job description keywords.`
 }
 
 module.exports = { generateInterviewReport, generateResumePdf }
+
